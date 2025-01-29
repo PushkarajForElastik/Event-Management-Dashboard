@@ -1,17 +1,16 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
-import EventList from './components/EventList'  
+import React from 'react';
+import { EventList } from './components/EventList';
+import { events } from './data/events_data';
 
 function App() {
-
   return (
-    <>
-      <div>App</div>
-      <EventList /> 
-    </>
-  )
+    <div className="min-h-screen bg-gray-100 p-8">
+      <div className="max-w-7xl mx-auto">
+       
+        <EventList events={events} />
+      </div>
+    </div>
+  );
 }
 
-export default App
+export default App;
