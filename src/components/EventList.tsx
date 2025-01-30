@@ -1,98 +1,112 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { ArrowUpDown } from 'lucide-react';
-import axios from 'axios';
-import { Event } from '../types/event';
+import React, { useState, useEffect, useCallback } from "react";
+import { ArrowUpDown } from "lucide-react";
+import axios from "axios";
+import { Event } from "../types/event";
+import SearchAttendee from "../components/SearchAttendee";
 
-type SortField = 'eventDate' | 'ticketPrice' | 'ticketsSold';
-type SortOrder = 'asc' | 'desc';
+type SortField = "eventDate" | "ticketPrice" | "ticketsSold";
+type SortOrder = "asc" | "desc";
 
 export const EventList: React.FC = () => {
   const [events, setEvents] = useState<Event[]>([]);
-  const [sortField, setSortField] = useState<SortField>('eventDate');
-  const [sortOrder, setSortOrder] = useState<SortOrder>('asc');
+  const [filteredEvents, setFilteredEvents] = useState<Event[] | null>(null);
+  const [sortField, setSortField] = useState<SortField>("eventDate");
+  const [sortOrder, setSortOrder] = useState<SortOrder>("asc");
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-  const [page, setPage] = useState<number>(1); // Track current page
-  const [hasMore, setHasMore] = useState<boolean>(true); // Track if more data is available
+  const [page, setPage] = useState<number>(1);
+  const [hasMore, setHasMore] = useState<boolean>(true);
+  const [searchQuery, setSearchQuery] = useState<string>("");
 
-  // Fetch data from the API
+  // Fetch events
   const fetchData = useCallback(async () => {
-    if (!hasMore) return; // Prevent fetching if no more data
+    if (!hasMore) return;
     try {
       setLoading(true);
       const response = await axios.get(
-        `https://6799e5a0747b09cdcccce6fe.mockapi.io/api/events/?page=${page}&limit=15` // Fetch 10 events per page
+        `https://6799e5a0747b09cdcccce6fe.mockapi.io/api/events/?page=${page}&limit=15`
       );
       const newEvents = response.data;
-      setEvents((prevEvents) => [...prevEvents, ...newEvents]); // Append new data
-      setHasMore(newEvents.length > 0); // If no data is returned, stop fetching
+      setEvents((prevEvents) => [...prevEvents, ...newEvents]);
+      setHasMore(newEvents.length > 0);
     } catch (err) {
       console.log(err);
-      setError('Failed to fetch events. Please try again later.');
+      setError("Failed to fetch events. Please try again later.");
     } finally {
       setLoading(false);
     }
   }, [page, hasMore]);
 
-  // Trigger fetch when component mounts or page changes
   useEffect(() => {
     fetchData();
   }, [fetchData]);
 
-  // Handle sorting
+  // Infinite scroll
+  const handleScroll = useCallback(() => {
+    const { scrollTop, scrollHeight, clientHeight } = document.documentElement;
+    if (scrollHeight - scrollTop <= clientHeight + 10 && !loading && hasMore) {
+      setPage((prevPage) => prevPage + 1);
+    }
+  }, [loading, hasMore]);
+
+  useEffect(() => {
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [handleScroll]);
+
+  // Search filter
+  const handleSearch = (query: string) => {
+    setSearchQuery(query);
+    if (!query) {
+      setFilteredEvents(null);
+    } else {
+      const searchResults = events.filter((event) =>
+        event.eventName.toLowerCase().includes(query.toLowerCase())
+      );
+      setFilteredEvents(searchResults);
+    }
+  };
+
+  // Handle attendee selection from SearchAttendee
+  const handleAttendeeSelect = (eventList: Event[]) => {
+    setFilteredEvents(eventList);
+  };
+
+  // Sorting
   const handleSort = (field: SortField) => {
-    const newSortOrder = field === sortField && sortOrder === 'asc' ? 'desc' : 'asc';
+    const newSortOrder =
+      field === sortField && sortOrder === "asc" ? "desc" : "asc";
     setSortField(field);
     setSortOrder(newSortOrder);
 
-    const sortedEvents = [...events].sort((a, b) => {
+    const sortedEvents = [...(filteredEvents || events)].sort((a, b) => {
       const aValue = a[field];
       const bValue = b[field];
 
-      if (field === 'eventDate') {
-        return newSortOrder === 'asc'
+      if (field === "eventDate") {
+        return newSortOrder === "asc"
           ? new Date(aValue).getTime() - new Date(bValue).getTime()
           : new Date(bValue).getTime() - new Date(aValue).getTime();
       }
 
-      if (field === 'ticketPrice') {
-        const aPrice = parseFloat(aValue as string); // Convert to number
-        const bPrice = parseFloat(bValue as string); // Convert to number
-        return newSortOrder === 'asc'
-          ? aPrice - bPrice
-          : bPrice - aPrice;
+      if (field === "ticketPrice") {
+        return newSortOrder === "asc"
+          ? parseFloat(aValue as string) - parseFloat(bValue as string)
+          : parseFloat(bValue as string) - parseFloat(aValue as string);
       }
 
-      if (field === 'ticketsSold') {
-        return newSortOrder === 'asc'
-          ? a.ticketsSold - b.ticketsSold
-          : b.ticketsSold - a.ticketsSold;
-      }
-
-      return 0;
+      return newSortOrder === "asc"
+        ? a.ticketsSold - b.ticketsSold
+        : b.ticketsSold - a.ticketsSold;
     });
 
-    setEvents(sortedEvents);
+    setFilteredEvents(sortedEvents);
   };
 
-  // Infinite scroll handler
-  const handleScroll = useCallback(() => {
-    const { scrollTop, scrollHeight, clientHeight } = document.documentElement;
-    const threshold = 10; // Adjust this value as needed
-
-    // Check if the user has scrolled to the bottom
-    if (scrollHeight - scrollTop <= clientHeight + threshold && !loading && hasMore) {
-      setPage((prevPage) => prevPage + 1); // Load next page of events
-    }
-  }, [loading, hasMore]);
-
-  // Attach scroll event listener
-  useEffect(() => {
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, [handleScroll]);
-
-  const SortButton: React.FC<{ field: SortField; label: string }> = ({ field, label }) => (
+  const SortButton: React.FC<{ field: SortField; label: string }> = ({
+    field,
+    label,
+  }) => (
     <button
       onClick={() => handleSort(field)}
       className="flex items-center gap-1 hover:text-blue-600 transition-colors"
@@ -100,22 +114,21 @@ export const EventList: React.FC = () => {
       {label}
       <ArrowUpDown
         className={`h-4 w-4 ${
-          sortField === field ? 'text-blue-600' : 'text-gray-400'
+          sortField === field ? "text-blue-600" : "text-gray-400"
         }`}
       />
     </button>
   );
 
-  if (loading && page === 1) {
-    return <div className="p-4 text-center text-gray-600">Loading events...</div>;
-  }
-
-  if (error) {
-    return <div className="p-4 text-center text-red-600">{error}</div>;
-  }
+  const displayedEvents = filteredEvents !== null ? filteredEvents : events;
 
   return (
-    <div className="overflow-hidden rounded-lg shadow-md bg-white">
+    <div className="overflow-hidden rounded-lg shadow-md bg-white p-6">
+      <div className="mb-6">
+        {/* Search Attendee Component */}
+        <SearchAttendee onSearchResult={handleAttendeeSelect} />
+      </div>
+
       {/* Table for Larger Screens */}
       <div className="hidden md:block overflow-x-auto">
         <table className="w-full border-collapse">
@@ -135,13 +148,13 @@ export const EventList: React.FC = () => {
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-200">
-            {events.map((event) => (
+            {displayedEvents.map((event) => (
               <tr key={event.id} className="hover:bg-gray-50 transition">
                 <td className="px-4 py-3 text-gray-900 text-sm font-medium">
                   {event.eventName}
                 </td>
                 <td className="px-4 py-3 text-gray-500 text-sm">
-                  {new Date(event.eventDate).toLocaleDateString('en-GB')}
+                  {new Date(event.eventDate).toLocaleDateString("en-GB")}
                 </td>
                 <td className="px-4 py-3 text-gray-500 text-sm">
                   ${event.ticketPrice}
@@ -162,36 +175,28 @@ export const EventList: React.FC = () => {
 
       {/* Mobile-Friendly Card View */}
       <div className="md:hidden space-y-4 p-4">
-        {events.map((event) => (
-          <div
-            key={event.id}
-            className="bg-gray-50 p-4 rounded-lg shadow-md"
-          >
-            <div className="flex justify-between items-center">
-              <h3 className="text-lg font-semibold text-gray-900">
-                {event.eventName}
-              </h3>
-              <span className="text-sm text-gray-500">
-                {new Date(event.eventDate).toLocaleDateString('en-GB')}
-              </span>
-            </div>
-            <div className="grid grid-cols-2 gap-4 text-sm mt-2">
-              <p className="text-gray-500">
-                 Ticket Price:{' '}
-                <span className="font-semibold">${event.ticketPrice}</span>
-              </p>
-              <p className="text-gray-500">
-                 Tickets Sold:{' '}
-                <span className="font-semibold">{event.ticketsSold}</span>
-              </p>
-            </div>
+        {displayedEvents.map((event) => (
+          <div key={event.id} className="bg-gray-50 p-4 rounded-lg shadow-md">
+            <h3 className="text-lg font-semibold text-gray-900">
+              {event.eventName}
+            </h3>
+            <p className="text-gray-500">
+              {new Date(event.eventDate).toLocaleDateString("en-GB")}
+            </p>
+            <p className="text-gray-500">Ticket Price: ${event.ticketPrice}</p>
+            <p className="text-gray-500">Tickets Sold: {event.ticketsSold}</p>
             <button className="mt-3 w-full py-2 text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition">
               View Details
             </button>
           </div>
         ))}
       </div>
-      {loading && <div className="text-center p-4 text-gray-600">Loading more events...</div>}
+
+      {loading && (
+        <div className="text-center p-4 text-gray-600">
+          Loading more events...
+        </div>
+      )}
     </div>
   );
 };
