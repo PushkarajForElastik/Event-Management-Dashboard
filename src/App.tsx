@@ -31,7 +31,9 @@ function App() {
         {entryElements}
       </div> {/* Cards render */}
       <div className="max-w-7xl mx-auto">
-        <EventList events={events} />
+       
+        <EventList  />
+        
       </div>
     </div>
   );
