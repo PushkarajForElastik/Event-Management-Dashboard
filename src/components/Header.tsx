@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
 import AddEventForm from "./AddEventForm";
 
 const Header: React.FC = () => {

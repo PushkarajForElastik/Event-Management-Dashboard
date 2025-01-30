@@ -6,6 +6,7 @@ import SearchAttendee from "./components/SearchAttendee";
 import './App.css';
 import EventCardPage from "./pages/EventCardPage";
 import Header from "./components/Header";
+import Footer from "./components/Footer";
 
 function App() {
   return (
@@ -17,6 +18,7 @@ function App() {
         <Route path="/event-list" element={<EventList />} />
       </Routes>
     </BrowserRouter>
+    <Footer />
     </>
   )
 }
