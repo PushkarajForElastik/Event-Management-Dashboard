@@ -1,23 +1,40 @@
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Event } from './types/event';
 import { EventList } from "./components/EventList";
-import { events } from "./data/events_data";
+import axios from "axios";
 import SearchAttendee from "./components/SearchAttendee";
 import EventCard from "./components/EventCard";
 import './App.css';
 
 function App() {
+  // state to store events data
+  const [events, setEvents] = useState<Event[]>([]);
+
+  // Fetch data from the API
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(
+          'https://6799e5a0747b09cdcccce6fe.mockapi.io/api/events'
+        );
+        setEvents(response.data);
+      } catch (err) {
+        console.log(err);
+      }
+    };
+    fetchData();
+  }, []);
 
   // Reusable component for event card
   const entryElements = events.map((single: Event) => {
     return (
       <EventCard
         key={single.id}
-        eventName={single.name}
-        eventDate={single.date}
-        ticketPrice={single.ticketPrice}
-        ticketsSold={single.ticketSales}
+        eventName={single.eventName}
+        eventDate={single.eventDate}
+        ticketPrice={parseFloat(single.ticketPrice)}
+        ticketsSold={single.ticketsSold}
       />
     );
   });
