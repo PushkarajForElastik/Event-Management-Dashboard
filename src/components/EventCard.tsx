@@ -1,4 +1,3 @@
-// pranav
 export default function EventCard(props: {
     eventName: string;
     eventDate: string;
@@ -41,7 +40,3 @@ export default function EventCard(props: {
 
 
 
-
-
-
-// Riya Infinite Scrolling
