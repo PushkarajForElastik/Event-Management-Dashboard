@@ -107,7 +107,7 @@ export const EventList: React.FC = () => {
   );
 
   if (loading && page === 1) {
-    return <div className="p-4 text-center text-gray-600">Loading events...</div>;
+    return <div className="p-4 text-center text-gray-600 dark:text-gray-300 ">Loading events...</div>;
   }
 
   if (error) {
@@ -115,12 +115,12 @@ export const EventList: React.FC = () => {
   }
 
   return (
-    <div className="overflow-hidden rounded-lg shadow-md bg-white">
+    <div className="overflow-hidden rounded-lg shadow-md bg-white dark:bg-slate-800">
       {/* Table for Larger Screens */}
       <div className="hidden md:block overflow-x-auto">
         <table className="w-full border-collapse">
-          <thead className="bg-gray-100">
-            <tr className="text-left text-gray-600 text-sm font-semibold uppercase">
+          <thead className="bg-gray-100 dark:bg-slate-800">
+            <tr className="text-left text-gray-600 dark:text-gray-300  text-sm font-semibold uppercase">
               <th className="px-4 py-3">Event Name</th>
               <th className="px-4 py-3">
                 <SortButton field="eventDate" label="Event Date" />
@@ -134,19 +134,19 @@ export const EventList: React.FC = () => {
               <th className="px-4 py-3">Actions</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-200">
+          <tbody className="divide-y divide-gray-200 dark:divide-gray-500">
             {events.map((event) => (
-              <tr key={event.id} className="hover:bg-gray-50 transition">
-                <td className="px-4 py-3 text-gray-900 text-sm font-medium">
+              <tr key={event.id} className="hover:bg-gray-50 dark:hover:bg-slate-900 transition">
+                <td className="px-4 py-3 text-gray-900 dark:text-gray-300  text-sm font-medium">
                   {event.eventName}
                 </td>
-                <td className="px-4 py-3 text-gray-500 text-sm">
+                <td className="px-4 py-3 text-gray-500 dark:text-gray-300  text-sm">
                   {new Date(event.eventDate).toLocaleDateString('en-GB')}
                 </td>
-                <td className="px-4 py-3 text-gray-500 text-sm">
+                <td className="px-4 py-3 text-gray-500 dark:text-gray-300  text-sm">
                   ${event.ticketPrice}
                 </td>
-                <td className="px-4 py-3 text-gray-500 text-sm">
+                <td className="px-4 py-3 text-gray-500 dark:text-gray-300  text-sm">
                   {event.ticketsSold}
                 </td>
                 <td className="px-4 py-3">

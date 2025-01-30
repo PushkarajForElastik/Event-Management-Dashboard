@@ -68,7 +68,7 @@ export default function EventCardPage() {
     });
 
     return (
-        <div className="min-h-screen bg-gray-100 p-8">
+        <div className="min-h-screen bg-gray-100 p-8 dark:bg-slate-800">
             <div>
                 <SearchAttendee />
             </div>
@@ -77,7 +77,7 @@ export default function EventCardPage() {
             </div>
 
             {/* Loader */}
-            {loading && <div className="text-center p-4 text-gray-600">Loading more events...</div>}
+            {loading && <div className="text-center p-4 text-gray-600 dark:text-gray-300 ">Loading more events...</div>}
             {/* Error Message */}
             {error && <div className="p-4 text-center text-red-600">{error}</div>}
         </div>
