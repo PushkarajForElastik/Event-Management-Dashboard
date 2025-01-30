@@ -1,16 +1,12 @@
-export interface Attendee {
-    id: number;
-    name: string;
-    email: string;
-  }
-  
-  export interface Event {
-    id: number;
-    name: string;
-    date: string;
-    venue: string;
-    ticketPrice: number;
-    ticketSales: number;
-    attendees: Attendee[];
-    attendeeCount: number;
-  }
+
+
+export interface Event {
+  id: string;
+  eventName: string;
+  eventDate: string;
+  eventIcon: string;
+  description: string;
+  ticketPrice: string;
+  ticketsSold: number;
+  createdAt: string;
+}
