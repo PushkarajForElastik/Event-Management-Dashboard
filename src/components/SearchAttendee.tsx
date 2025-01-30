@@ -14,14 +14,18 @@ interface Event {
   ticketPrice: string;
   ticketsSold: number;
   description: string;
+  createdAt: string;
 }
 
-const SearchAttendee: React.FC = () => {
+interface SearchAttendeeProps {
+  onSearchResult: (events: Event[]) => void;
+}
+
+const SearchAttendee: React.FC<SearchAttendeeProps> = ({ onSearchResult }) => {
   const [query, setQuery] = useState("");
   const [attendees, setAttendees] = useState<Attendee[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
 
   const debouncedSearch = useCallback(
     debounce(async (searchQuery: string) => {
@@ -63,7 +67,6 @@ const SearchAttendee: React.FC = () => {
   };
 
   const fetchEventDetails = async (eventId: string) => {
-    setSelectedEvent(null);
     setIsLoading(true);
     try {
       const response = await fetch(
@@ -71,7 +74,7 @@ const SearchAttendee: React.FC = () => {
       );
       if (!response.ok) throw new Error("Event not found");
       const event: Event = await response.json();
-      setSelectedEvent(event);
+      onSearchResult([event]); // Send event data to parent
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to fetch event");
     } finally {
@@ -115,31 +118,6 @@ const SearchAttendee: React.FC = () => {
               </div>
             ))
           )}
-        </div>
-      )}
-
-      {selectedEvent && (
-        <div className="mt-5 p-4 border rounded-lg shadow-lg bg-white">
-          <img
-            src={selectedEvent.eventIcon}
-            alt={selectedEvent.eventName}
-            className="w-full h-40 object-cover rounded-md"
-          />
-          <h2 className="text-xl font-semibold mt-2">
-            {selectedEvent.eventName}
-          </h2>
-          <p className="text-gray-500">
-            {new Date(selectedEvent.eventDate).toDateString()}
-          </p>
-          <p className="text-gray-700 mt-2">{selectedEvent.description}</p>
-          <div className="flex justify-between mt-3">
-            <span className="font-bold">
-              Tickets Sold: {selectedEvent.ticketsSold}
-            </span>
-            <span className="font-bold">
-              Price: ${selectedEvent.ticketPrice}
-            </span>
-          </div>
         </div>
       )}
     </div>

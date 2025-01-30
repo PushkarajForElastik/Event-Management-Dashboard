@@ -5,10 +5,10 @@ import { Modal, Box, Stepper, Step, StepLabel, Button, TextField, Typography, Sn
 const steps = ["Enter Event Details", "Review & Submit"];
 
 interface EventFormData {
-  name: string;
-  date: string;
-  venue: string;
-  price: number;
+  eventName: string;
+  eventDate: string;
+  eventVenue: string;
+  ticketPrice: number;
   description: string;
 }
 
@@ -18,21 +18,37 @@ const AddEventForm: React.FC<{ open: boolean; onClose: () => void }> = ({ open, 
 
   const { control, handleSubmit, reset, watch, formState: { errors } } = useForm<EventFormData>();
 
-  // Reset form when modal opens
   useEffect(() => {
     if (open) {
-      reset();  
-      setActiveStep(0); 
+      reset();
+      setActiveStep(0);
     }
   }, [open, reset]);
 
-  const onSubmit = (data: EventFormData) => {
+  const onSubmit = async (data: EventFormData) => {
     if (activeStep === 0) {
       setActiveStep(1);
     } else {
-      console.log("Event Submitted:", data);
-      setSuccessMessage(true);
-      onClose();
+      try {
+        const response = await fetch("https://6799e5a0747b09cdcccce6fe.mockapi.io/api/events", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(data), // Matches API field names
+        });
+
+        if (!response.ok) {
+          throw new Error("Failed to save event");
+        }
+
+        const responseData = await response.json();
+        console.log("Saved Event:", responseData);
+
+        setSuccessMessage(true);
+        reset();
+        onClose();
+      } catch (error) {
+        console.error("Error submitting event:", error);
+      }
     }
   };
 
@@ -54,35 +70,35 @@ const AddEventForm: React.FC<{ open: boolean; onClose: () => void }> = ({ open, 
             {activeStep === 0 ? (
               <form onSubmit={handleSubmit(onSubmit)}>
                 <Controller
-                  name="name"
+                  name="eventName"
                   control={control}
                   defaultValue=""
                   rules={{ required: "Event name is required" }}
-                  render={({ field }) => <TextField {...field} label="Event Name" fullWidth margin="normal" error={!!errors.name} helperText={errors.name?.message} />}
+                  render={({ field }) => <TextField {...field} label="Event Name" fullWidth margin="normal" error={!!errors.eventName} helperText={errors.eventName?.message} />}
                 />
 
                 <Controller
-                  name="date"
+                  name="eventDate"
                   control={control}
                   defaultValue=""
                   rules={{ required: "Event date is required" }}
-                  render={({ field }) => <TextField {...field} label="Event Date" type="date" fullWidth margin="normal" InputLabelProps={{ shrink: true }} error={!!errors.date} helperText={errors.date?.message} />}
+                  render={({ field }) => <TextField {...field} label="Event Date" type="date" fullWidth margin="normal" InputLabelProps={{ shrink: true }} error={!!errors.eventDate} helperText={errors.eventDate?.message} />}
                 />
 
                 <Controller
-                  name="venue"
+                  name="eventVenue"
                   control={control}
                   defaultValue=""
                   rules={{ required: "Venue is required" }}
-                  render={({ field }) => <TextField {...field} label="Venue" fullWidth margin="normal" error={!!errors.venue} helperText={errors.venue?.message} />}
+                  render={({ field }) => <TextField {...field} label="Venue" fullWidth margin="normal" error={!!errors.eventVenue} helperText={errors.eventVenue?.message} />}
                 />
 
                 <Controller
-                  name="price"
+                  name="ticketPrice"
                   control={control}
                   defaultValue={0}
                   rules={{ required: "Ticket price is required", min: { value: 0, message: "Price cannot be negative" } }}
-                  render={({ field }) => <TextField {...field} label="Ticket Price" type="number" fullWidth margin="normal" error={!!errors.price} helperText={errors.price?.message} />}
+                  render={({ field }) => <TextField {...field} label="Ticket Price" type="number" fullWidth margin="normal" error={!!errors.ticketPrice} helperText={errors.ticketPrice?.message} />}
                 />
 
                 <Controller
@@ -95,21 +111,20 @@ const AddEventForm: React.FC<{ open: boolean; onClose: () => void }> = ({ open, 
               </form>
             ) : (
               <Box>
-                <Typography><strong>Name:</strong> {eventData.name}</Typography>
-                <Typography><strong>Date:</strong> {eventData.date}</Typography>
-                <Typography><strong>Venue:</strong> {eventData.venue}</Typography>
-                <Typography><strong>Price:</strong> ₹{eventData.price}</Typography>
+                <Typography><strong>Name:</strong> {eventData.eventName}</Typography>
+                <Typography><strong>Date:</strong> {eventData.eventDate}</Typography>
+                <Typography><strong>Venue:</strong> {eventData.eventVenue}</Typography>
+                <Typography><strong>Price:</strong> ₹{eventData.ticketPrice}</Typography>
                 <Typography><strong>Description:</strong> {eventData.description}</Typography>
               </Box>
             )}
           </Box>
 
-          {/* up1-sticky footer for buttons */}
           <Box sx={{ display: "flex", justifyContent: "space-between", mt: 2, pt: 2, borderTop: "1px solid #ccc" }}>
             {activeStep === 0 ? (
               <>
                 <Button onClick={onClose} color="inherit">Cancel</Button>
-                <Button type="submit" variant="contained" onClick={handleSubmit(onSubmit)}>Next</Button>
+                <Button type="button" variant="contained" onClick={handleSubmit(onSubmit)}>Next</Button>
               </>
             ) : (
               <>
@@ -121,7 +136,6 @@ const AddEventForm: React.FC<{ open: boolean; onClose: () => void }> = ({ open, 
         </Box>
       </Modal>
 
-      {/*update2- success msg popup */}
       <Snackbar open={successMessage} autoHideDuration={3000} onClose={() => setSuccessMessage(false)}>
         <Alert severity="success" onClose={() => setSuccessMessage(false)}>Event added successfully!</Alert>
       </Snackbar>

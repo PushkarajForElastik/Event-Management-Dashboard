@@ -7,6 +7,7 @@ import Header from "./components/Header";
 import Footer from "./components/Footer";
 import { useStateContext } from "./context/StateContext";
 import { useEffect } from "react";
+import EventListPage from "./pages/EventListPage";
 
 function App() {
   const { theme } = useStateContext();
@@ -21,16 +22,14 @@ function App() {
   }, [theme]);
   return (
     <>
-      <div className="h-full dark:bg-slate-800">
-        <Header />
-        <BrowserRouter>
-          <Routes>
-            <Route path="/" element={<EventCardPage />} />
-            <Route path="/event-list" element={<EventList />} />
-          </Routes>
-        </BrowserRouter>
-        <Footer />
-      </div>
+      <Header />
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<EventCardPage />} />
+          <Route path="/event-list" element={<EventListPage />} />
+        </Routes>
+      </BrowserRouter>
+      <Footer />
     </>
   );
 }
