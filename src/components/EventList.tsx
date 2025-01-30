@@ -112,12 +112,12 @@ export const EventList: React.FC = () => {
   );
 
   return (
-    <div className="overflow-hidden rounded-lg shadow-md bg-white p-6">
+    <div className="overflow-hidden rounded-lg shadow-md bg-white p-6 dark:bg-slate-800">
       {/* Table for Larger Screens */}
       <div className="overflow-x-auto">
         <table className="w-full border-collapse">
-          <thead className="bg-gray-100">
-            <tr className="text-left text-gray-600 text-sm font-semibold uppercase">
+          <thead className="bg-gray-100 dark:bg-slate-800">
+            <tr className="text-left text-gray-600 dark:text-gray-300  text-sm font-semibold uppercase">
               <th className="px-4 py-3">Event Name</th>
               <th className="px-4 py-3">
                 <SortButton field="eventDate" label="Event Date" />
@@ -131,20 +131,20 @@ export const EventList: React.FC = () => {
               <th className="px-4 py-3">Actions</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-200">
+          <tbody className="divide-y divide-gray-200 dark:divide-gray-500">
             {events.map((event) => (
               <React.Fragment key={event.id}>
-                <tr className="hover:bg-gray-50 transition">
-                  <td className="px-4 py-3 text-gray-900 text-sm font-medium">
+                <tr className="hover:bg-gray-50 dark:hover:bg-slate-900 transition">
+                  <td className="px-4 py-3 text-gray-900 dark:text-gray-300  text-sm font-medium">
                     {event.eventName}
                   </td>
-                  <td className="px-4 py-3 text-gray-500 text-sm">
+                  <td className="px-4 py-3 text-gray-500 dark:text-gray-300  text-sm">
                     {new Date(event.eventDate).toLocaleDateString("en-GB")}
                   </td>
-                  <td className="px-4 py-3 text-gray-500 text-sm">
+                  <td className="px-4 py-3 text-gray-500 dark:text-gray-300  text-sm">
                     ${event.ticketPrice}
                   </td>
-                  <td className="px-4 py-3 text-gray-500 text-sm">
+                  <td className="px-4 py-3 text-gray-500 dark:text-gray-300  text-sm">
                     {event.ticketsSold}
                   </td>
                   <td className="px-4 py-3">
@@ -158,13 +158,13 @@ export const EventList: React.FC = () => {
                 </tr>
                 {expandedRows[event.id] && (
                   <tr>
-                    <td colSpan={5} className="bg-gray-50 px-8 py-4">
-                      <div className="text-sm font-medium text-gray-900 mb-3">
+                    <td colSpan={5} className="bg-gray-50 dark:bg-slate-900 px-8 py-4">
+                      <div className="text-sm font-medium text-gray-900 dark:text-gray-300  mb-3">
                         Attendees List
                       </div>
                       <table className="w-full">
                         <thead>
-                          <tr className="text-left text-gray-600 text-xs font-semibold uppercase">
+                          <tr className="text-left text-gray-600 dark:text-gray-300 text-xs font-semibold uppercase">
                             <th className="px-4 py-2">Name</th>
                             <th className="px-4 py-2">Email</th>
                             <th className="px-4 py-2">Ticket Type</th>
@@ -172,7 +172,7 @@ export const EventList: React.FC = () => {
                         </thead>
                         <tbody>
                           {attendees[event.id]?.map((attendee) => (
-                            <tr key={attendee.id} className="hover:bg-gray-100">
+                            <tr key={attendee.id} className="hover:bg-gray-100 dark:hover:bg-slate-800 dark:text-gray-300">
                               <td className="px-4 py-2 text-sm">{attendee.name}</td>
                               <td className="px-4 py-2 text-sm">{attendee.email}</td>
                               <td className="px-4 py-2 text-sm">
@@ -192,7 +192,7 @@ export const EventList: React.FC = () => {
       </div>
 
       {loading && (
-        <div className="text-center p-4 text-gray-600">Loading events...</div>
+        <div className="text-center p-4 text-gray-600 dark:text-gray-300">Loading events...</div>
       )}
       
       {error && (

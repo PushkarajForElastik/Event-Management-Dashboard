@@ -90,28 +90,31 @@ const SearchAttendee: React.FC<SearchAttendeeProps> = ({ onSearchResult }) => {
         placeholder="Search attendees by name..."
         value={query}
         onChange={handleInputChange}
-        className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+        className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none
+         focus:ring-2 focus:ring-blue-500 focus:border-blue-500
+         dark:placeholder:text-white dark:text-white"
       />
 
       {isLoading && (
-        <div className="mt-2 text-center text-gray-600">Searching...</div>
+        <div className="mt-2 text-center text-gray-600 dark:text-white">Searching...</div>
       )}
       {error && <div className="mt-2 text-center text-red-600">{error}</div>}
 
       {!isLoading && !error && query.length >= 3 && (
-        <div className="absolute z-10 w-full mt-1 bg-white border border-gray-200 rounded-md shadow-lg max-h-60 overflow-y-auto">
+        <div className="absolute z-10 w-full mt-1 bg-white border dark:bg-slate-900  border-gray-200 dark:border-gray-500 rounded-md shadow-lg max-h-60 overflow-y-auto">
           {attendees.length === 0 ? (
-            <div className="px-4 py-2 text-gray-600">
+            <div className="px-4 py-2 text-gray-600 dark:text-gray-300">
               No matching attendees found
             </div>
           ) : (
             attendees.map((attendee) => (
               <div
                 key={attendee.id}
-                className="px-4 py-2 border-b border-gray-100 hover:bg-gray-50 cursor-pointer"
+                className="px-4 py-2 border-b border-gray-100 dark:border-gray-500 hover:bg-gray-50 dark:hover:bg-slate-800
+                 cursor-pointer bg-white dark:bg-slate-900"
                 onClick={() => fetchEventDetails(attendee.eventId)}
               >
-                <div className="font-medium text-gray-900">{attendee.name}</div>
+                <div className="font-medium text-gray-900 dark:text-gray-300">{attendee.name}</div>
               </div>
             ))
           )}
