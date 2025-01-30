@@ -1,8 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { ArrowUpDown } from 'lucide-react';
 import axios from 'axios';
-import { Event } from '../types/event'
-
+import { Event } from '../types/event';
 
 type SortField = 'eventDate' | 'ticketPrice' | 'ticketsSold';
 type SortOrder = 'asc' | 'desc';
@@ -13,27 +12,32 @@ export const EventList: React.FC = () => {
   const [sortOrder, setSortOrder] = useState<SortOrder>('asc');
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [page, setPage] = useState<number>(1); // Track current page
+  const [hasMore, setHasMore] = useState<boolean>(true); // Track if more data is available
 
   // Fetch data from the API
+  const fetchData = useCallback(async () => {
+    if (!hasMore) return; // Prevent fetching if no more data
+    try {
+      setLoading(true);
+      const response = await axios.get(
+        `https://6799e5a0747b09cdcccce6fe.mockapi.io/api/events/?page=${page}&limit=15` // Fetch 10 events per page
+      );
+      const newEvents = response.data;
+      setEvents((prevEvents) => [...prevEvents, ...newEvents]); // Append new data
+      setHasMore(newEvents.length > 0); // If no data is returned, stop fetching
+    } catch (err) {
+      console.log(err);
+      setError('Failed to fetch events. Please try again later.');
+    } finally {
+      setLoading(false);
+    }
+  }, [page, hasMore]);
+
+  // Trigger fetch when component mounts or page changes
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await axios.get(
-          'https://6799e5a0747b09cdcccce6fe.mockapi.io/api/events/'
-        );
-        setEvents(response.data);
-        setLoading(false);
-      } catch (err) {
-        console.log(err);
-        
-        setError('Failed to fetch events. Please try again later.');
-        setLoading(false);
-      }
-    };
-
     fetchData();
-  }, []);
-
+  }, [fetchData]);
 
   // Handle sorting
   const handleSort = (field: SortField) => {
@@ -71,6 +75,23 @@ export const EventList: React.FC = () => {
     setEvents(sortedEvents);
   };
 
+  // Infinite scroll handler
+  const handleScroll = useCallback(() => {
+    const { scrollTop, scrollHeight, clientHeight } = document.documentElement;
+    const threshold = 10; // Adjust this value as needed
+
+    // Check if the user has scrolled to the bottom
+    if (scrollHeight - scrollTop <= clientHeight + threshold && !loading && hasMore) {
+      setPage((prevPage) => prevPage + 1); // Load next page of events
+    }
+  }, [loading, hasMore]);
+
+  // Attach scroll event listener
+  useEffect(() => {
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [handleScroll]);
+
   const SortButton: React.FC<{ field: SortField; label: string }> = ({ field, label }) => (
     <button
       onClick={() => handleSort(field)}
@@ -85,7 +106,7 @@ export const EventList: React.FC = () => {
     </button>
   );
 
-  if (loading) {
+  if (loading && page === 1) {
     return <div className="p-4 text-center text-gray-600">Loading events...</div>;
   }
 
@@ -170,6 +191,7 @@ export const EventList: React.FC = () => {
           </div>
         ))}
       </div>
+      {loading && <div className="text-center p-4 text-gray-600">Loading more events...</div>}
     </div>
   );
 };
