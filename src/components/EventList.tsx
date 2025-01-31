@@ -41,13 +41,17 @@ export const EventList: React.FC = () => {
       const response = await axios.get(
         `https://6799e5a0747b09cdcccce6fe.mockapi.io/api/events/${eventId}/attendee`
       );
+      
+
+      
       setAttendees(prev => ({
         ...prev,
         [eventId]: response.data
       }));
+
     } catch (err) {
       console.error(err);
-      setError(`Failed to fetch attendees for event ${eventId}`);
+      setError("There are no atendees for this event ");
     }
   };
 
@@ -114,10 +118,10 @@ export const EventList: React.FC = () => {
   return (
     <div className="overflow-hidden rounded-lg shadow-md bg-white p-6 dark:bg-slate-800">
       {/* Table for Larger Screens */}
-      <div className="overflow-x-auto">
+      <div className="hidden md:block overflow-x-auto">
         <table className="w-full border-collapse">
           <thead className="bg-gray-100 dark:bg-slate-800">
-            <tr className="text-left text-gray-600 dark:text-gray-300  text-sm font-semibold uppercase">
+            <tr className="text-left text-gray-600 dark:text-gray-300 text-base font-semibold uppercase">
               <th className="px-4 py-3">Event Name</th>
               <th className="px-4 py-3">
                 <SortButton field="eventDate" label="Event Date" />
@@ -135,22 +139,22 @@ export const EventList: React.FC = () => {
             {events.map((event) => (
               <React.Fragment key={event.id}>
                 <tr className="hover:bg-gray-50 dark:hover:bg-slate-900 transition">
-                  <td className="px-4 py-3 text-gray-900 dark:text-gray-300  text-sm font-medium">
+                  <td className="px-4 py-3 text-gray-900 dark:text-gray-300 text-base font-medium">
                     {event.eventName}
                   </td>
-                  <td className="px-4 py-3 text-gray-500 dark:text-gray-300  text-sm">
+                  <td className="px-4 py-3 text-gray-500 dark:text-gray-300 text-base">
                     {new Date(event.eventDate).toLocaleDateString("en-GB")}
                   </td>
-                  <td className="px-4 py-3 text-gray-500 dark:text-gray-300  text-sm">
+                  <td className="px-4 py-3 text-gray-500 dark:text-gray-300 text-base">
                     ${event.ticketPrice}
                   </td>
-                  <td className="px-4 py-3 text-gray-500 dark:text-gray-300  text-sm">
+                  <td className="px-4 py-3 text-gray-500 dark:text-gray-300 text-base">
                     {event.ticketsSold}
                   </td>
                   <td className="px-4 py-3">
                     <button
                       onClick={() => toggleAttendees(event.id)}
-                      className="px-4 py-2 text-sm font-semibold text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition"
+                      className="px-4 py-2 text-base font-semibold text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition"
                     >
                       {expandedRows[event.id] ? "Hide Attendees" : "Show Attendees"}
                     </button>
@@ -159,25 +163,21 @@ export const EventList: React.FC = () => {
                 {expandedRows[event.id] && (
                   <tr>
                     <td colSpan={5} className="bg-gray-50 dark:bg-slate-900 px-8 py-4">
-                      <div className="text-sm font-medium text-gray-900 dark:text-gray-300  mb-3">
+                      <div className="text-base font-medium text-gray-900 dark:text-gray-300 mb-3">
                         Attendees List
                       </div>
                       <table className="w-full">
                         <thead>
-                          <tr className="text-left text-gray-600 dark:text-gray-300 text-xs font-semibold uppercase">
+                          <tr className="text-left text-gray-600 dark:text-gray-300 text-sm font-semibold uppercase">
                             <th className="px-4 py-2">Name</th>
                             <th className="px-4 py-2">Email</th>
-                            <th className="px-4 py-2">Ticket Type</th>
                           </tr>
                         </thead>
                         <tbody>
                           {attendees[event.id]?.map((attendee) => (
                             <tr key={attendee.id} className="hover:bg-gray-100 dark:hover:bg-slate-800 dark:text-gray-300">
-                              <td className="px-4 py-2 text-sm">{attendee.name}</td>
-                              <td className="px-4 py-2 text-sm">{attendee.email}</td>
-                              <td className="px-4 py-2 text-sm">
-                                {attendee.ticketType}
-                              </td>
+                              <td className="px-4 py-2 text-base">{attendee.name}</td>
+                              <td className="px-4 py-2 text-base">{attendee.email}</td>
                             </tr>
                           ))}
                         </tbody>
@@ -191,15 +191,45 @@ export const EventList: React.FC = () => {
         </table>
       </div>
 
-      {loading && (
-        <div className="text-center p-4 text-gray-600 dark:text-gray-300">Loading events...</div>
-      )}
-      
-      {error && (
-        <div className="text-center p-4 text-red-600">{error}</div>
-      )}
+      {/* Card Layout for Mobile Screens */}
+      <div className="md:hidden">
+        {events.map((event) => (
+          <div key={event.id} className="mb-4 p-4 border rounded-lg bg-gray-100 dark:bg-slate-900">
+            <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-300">
+              {event.eventName}
+            </h3>
+            <p className="text-lg text-gray-600 dark:text-gray-300">
+              Event Date: {new Date(event.eventDate).toLocaleDateString("en-GB")}
+            </p>
+            <p className="text-lg text-gray-600 dark:text-gray-300">Ticket Price: ${event.ticketPrice}</p>
+            <p className="text-lg text-gray-600 dark:text-gray-300">Tickets Sold: {event.ticketsSold}</p>
+            <button
+              onClick={() => toggleAttendees(event.id)}
+              className="mt-2 w-full text-lg font-semibold text-white bg-blue-600 rounded-lg py-2 hover:bg-blue-700 transition"
+            >
+              {expandedRows[event.id] ? "Hide Attendees" : "Show Attendees"}
+            </button>
+
+            {expandedRows[event.id] && (
+              <div className="mt-3 bg-white dark:bg-gray-800 p-3 rounded-lg">
+                <h4 className="text-lg font-medium text-gray-900 dark:text-gray-300 mb-2">Attendees List</h4>
+                {attendees[event.id]?.map((attendee) => (
+                  <div key={attendee.id} className="p-2 border-b text-lg text-gray-700 dark:text-gray-300">
+                    <p>Name: {attendee.name}</p>
+                    <p>Email: {attendee.email}</p>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
+
+      {loading && <div className="text-center p-4 text-lg text-gray-600 dark:text-gray-300">Loading events...</div>}
+      {error && <div className="text-center p-4 text-lg text-red-600">{error}</div>}
     </div>
   );
 };
+
 
 export default EventList;
