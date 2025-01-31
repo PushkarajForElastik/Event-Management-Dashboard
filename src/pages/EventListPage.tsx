@@ -1,9 +1,8 @@
-import React from "react";
+
 import { EventList } from "../components/EventList";
 
-type Props = {};
 
-const EventListPage = (props: Props) => {
+const EventListPage = () => {
   return <EventList />;
 };
 
