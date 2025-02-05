@@ -5,7 +5,7 @@ export default function Footer() {
                 <div className="sm:flex sm:items-center sm:justify-between">
                     <img src="/logo-wide.png" className="h-12" alt="Logo" />
 
-                    <span className="block text-sm text-gray-500 sm:text-center dark:text-gray-400">© 2025 <a className="hover:underline">Elavate 2025</a></span>
+                    <span className="block text-sm text-gray-500 sm:text-center dark:text-gray-400">© Elastik Teams - <a className="hover:underline">Elavate 2025</a></span>
                 </div>
             </div>
         </footer>

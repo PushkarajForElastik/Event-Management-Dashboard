@@ -20,14 +20,14 @@ function App() {
   }, [theme]);
   return (
     <>
-      <Header />
       <BrowserRouter>
+        <Header />
         <Routes>
           <Route path="/" element={<EventCardPage />} />
           <Route path="/event-list" element={<EventListPage />} />
         </Routes>
+        <Footer />
       </BrowserRouter>
-      <Footer />
     </>
   );
 }
