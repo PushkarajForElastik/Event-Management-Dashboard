@@ -1,21 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
-
-interface Attendee {
-  id: string;
-  name: string;
-  eventId: string;
-}
-
-interface Event {
-  id: string;
-  eventName: string;
-  eventIcon: string;
-  eventDate: string;
-  ticketPrice: string;
-  ticketsSold: number;
-  description: string;
-  createdAt: string;
-}
+import { Event,Attendee } from "../types/event";
 
 interface SearchAttendeeProps {
   onSearchResult: (events: Event[]) => void;
