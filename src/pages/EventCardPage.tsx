@@ -32,6 +32,8 @@ export default function EventCardPage() {
     }
   };
 
+
+
   useEffect(() => {
     fetchData();
   }, [page]);
@@ -66,10 +68,12 @@ export default function EventCardPage() {
         {(filteredEvents !== null ? filteredEvents : events).map((event) => (
           <EventCard
             key={event.id}
+            id={event.id}
             eventName={event.eventName}
             eventDate={event.eventDate}
-            ticketPrice={parseFloat(event.ticketPrice)}
+            ticketPrice={event.ticketPrice}
             ticketsSold={event.ticketsSold}
+            eventIcon={event.eventIcon}
           />
         ))}
       </div>

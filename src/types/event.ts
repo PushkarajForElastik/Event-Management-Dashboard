@@ -2,8 +2,9 @@ export interface Event {
   id: string;
   eventName: string;
   eventDate: string;
-  ticketPrice: string;
+  ticketPrice: number;
   ticketsSold: number;
+  eventIcon:string;
 }
 
 export interface Attendee {
@@ -11,4 +12,5 @@ export interface Attendee {
   name: string;
   email: string;
   ticketType: string;
+  eventId: string;
 }
