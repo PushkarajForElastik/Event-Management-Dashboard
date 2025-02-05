@@ -56,7 +56,7 @@ const AddEventForm: React.FC<{ open: boolean; onClose: () => void }> = ({ open, 
 
   return (
     <>
-      <Modal open={open} onClose={onClose}>
+      <Modal open={open} onClose={onClose}> 
         <Box sx={{ width: 500, bgcolor: "background.paper", p: 3, mx: "auto", mt: 10, borderRadius: 2, display: "flex", flexDirection: "column" }}>
           <Typography variant="h6" gutterBottom>Add Event</Typography>
 
