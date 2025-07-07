@@ -19,9 +19,9 @@ export default function EventCardPage() {
     try {
       setLoading(true);
       const response = await axios.get(
-        `https://6799e5a0747b09cdcccce6fe.mockapi.io/api/events/?page=${page}&limit=15`
+        `/api/events/?page=${page}&limit=15`
       );
-      const newEvents = response.data;
+      const newEvents = response.data.data;
       setEvents((prevEvents) => [...prevEvents, ...newEvents]);
       setHasMore(newEvents.length > 0);
     } catch (err) {

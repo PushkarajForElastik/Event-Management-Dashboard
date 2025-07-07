@@ -30,7 +30,7 @@ const AddEventForm: React.FC<{ open: boolean; onClose: () => void }> = ({ open, 
       setActiveStep(1);
     } else {
       try {
-        const response = await fetch("https://6799e5a0747b09cdcccce6fe.mockapi.io/api/events", {
+        const response = await fetch("/api/events", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(data), // Matches API field names

@@ -23,14 +23,15 @@ const SearchAttendee: React.FC<SearchAttendeeProps> = ({ onSearchResult }) => {
 
       try {
         const response = await fetch(
-          `https://6799e5a0747b09cdcccce6fe.mockapi.io/api/attendee?name=${encodeURIComponent(
+          `/api/attendee?name=${encodeURIComponent(
             searchQuery
           )}`
         );
 
         if (!response.ok) throw new Error("Failed to fetch attendees");
 
-        const data: Attendee[] = await response.json();
+        const res = await response.json();
+        const data: Attendee[] = res.data;
         setAttendees(data);
       } catch (err) {
         setError(err instanceof Error ? err.message : "Failed to search");
@@ -54,10 +55,11 @@ const SearchAttendee: React.FC<SearchAttendeeProps> = ({ onSearchResult }) => {
     setIsLoading(true);
     try {
       const response = await fetch(
-        `https://6799e5a0747b09cdcccce6fe.mockapi.io/api/events/${eventId}`
+        `/api/events/${eventId}`
       );
       if (!response.ok) throw new Error("Event not found");
-      const event: Event = await response.json();
+      const res = await response.json();
+      const event: Event = res.data;
       onSearchResult([event]); // Send event data to parent
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to fetch event");

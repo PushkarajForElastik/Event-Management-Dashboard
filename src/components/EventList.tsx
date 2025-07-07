@@ -23,9 +23,9 @@ export const EventList: React.FC = () => {
     try {
       setLoading(true);
       const response = await axios.get(
-        "https://6799e5a0747b09cdcccce6fe.mockapi.io/api/events"
+        "/api/events"
       );
-      setEvents(response.data);
+      setEvents(response.data.data);
     } catch (err) {
       console.error(err);
       setError("Failed to fetch events");
@@ -43,11 +43,11 @@ export const EventList: React.FC = () => {
     try {
       setFetchingAttendees((prev) => ({ ...prev, [eventId]: true })); // Set loading state for this event
       const response = await axios.get(
-        `https://6799e5a0747b09cdcccce6fe.mockapi.io/api/events/${eventId}/attendee`
+        `/api/events/${eventId}/attendee`
       );
       setAttendees((prev) => ({
         ...prev,
-        [eventId]: response.data,
+        [eventId]: response.data.data,
       }));
     } catch (err) {
       console.error(err);
